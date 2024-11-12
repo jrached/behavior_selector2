@@ -1,46 +1,41 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.14.4)
 project(behavior_selector)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
 
-find_package(catkin REQUIRED COMPONENTS
-	rospy
-	message_generation
-	std_msgs
-    rqt_gui
-    rqt_gui_py
-)
+find_package(ament_cmake)
+find_package(rclpy REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(rqt_gui REQUIRED)
+find_package(rqt_gui_py REQUIRED)
 
-## Generate services in the 'srv' folder
-add_service_files(
-  FILES
-  MissionModeChange.srv
+# ROS2:
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "srv/MissionModeChange.srv"
+  DEPENDENCIES std_msgs 
 )
-
-generate_messages(
-	DEPENDENCIES
-	std_msgs
-)
-
-catkin_package()
 
 
 ## Your package locations should be listed before other locations
-include_directories(
- ${catkin_INCLUDE_DIRS}
+target_include_directories(${PROJECT_NAME}
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
 )
 
-install(PROGRAMS scripts/rqt_pkg.py
-  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+install(PROGRAMS scripts/rqt_pkg.py 
+  DESTINATION lib/${PROJECT_NAME}
 )
 
-install(DIRECTORY
+install(DIRECTORY 
   resource
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+  DESTINATION share/${PROJECT_NAME}
 )
 
-install(FILES
+install(FILES 
   plugin.xml
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+  DESTINATION share/${PROJECT_NAME}
 )
+
+ament_package()
