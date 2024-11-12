@@ -21,11 +21,12 @@ setup(
         ('share/' + package_name, ['package.xml']),
         (os.path.join('share', package_name), glob('resource/*')),
         (os.path.join('share', package_name), ['plugin.xml']),
-        (os.path.join('lib', package_name), glob('scripts/*.py')),
+        (os.path.join('lib', package_name), glob('behavior_selector2/*.py')),
     ],
     entry_points={
         'console_scripts': [
-            'button_module = behavior_selector2.button_module:main',
+            'button_module = behavior_selector2.button_module',
+            'behavior_selector = behavior_selector2.behavior_selector.main',
         ],
     },
 )

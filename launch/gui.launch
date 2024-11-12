@@ -5,6 +5,6 @@
   <node pkg="rqt_gui" exec="rqt_gui" name="rqt_gui" args="--perspective-file $(find behavior_selector)/cfg/default.perspective"/>
 
   <!-- Service server for GUI, publishes globalflightmode -->
-  <node pkg="behavior_selector" exec="behavior_selector_node.py" name="behavior_selector" output="screen" />
+  <node pkg="behavior_selector2" exec="behavior_selector_node.py" name="behavior_selector" output="screen" />
 
 </launch>

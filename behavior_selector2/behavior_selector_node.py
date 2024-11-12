@@ -1,22 +1,23 @@
 #!/usr/bin/env python
-import rospy
+import rclpy
 import numpy as np
 
 from snapstack_msgs.msg import QuadFlightMode
-from behavior_selector.srv import MissionModeChange
+from behavior_selector2.srv import MissionModeChange
 
 NOT_FLYING = 0
 FLYING = 1
 
-class Behavior_Selector:
+class Behavior_Selector(Node):
 
     def __init__(self):
+        super().__init__('behavior_selector')
         self.status = NOT_FLYING
-        self.pubEvent    = rospy.Publisher("globalflightmode", QuadFlightMode, queue_size=1, latch=True)
+        self.pubEvent    = self.create_publisher(QuadFlightMode, "globalflightmode", queue_size=1, latch=True)
         self.flightevent = QuadFlightMode()
         
     def sendEvent(self):
-        self.flightevent.header.stamp = rospy.get_rostime()
+        self.flightevent.header.stamp = self.get_clock().now()
         self.pubEvent.publish(self.flightevent)
 
     def change_mode(self,req):
@@ -40,10 +41,14 @@ class Behavior_Selector:
                   
 def startNode():
     c = Behavior_Selector()
-    s = rospy.Service("change_mode", MissionModeChange, c.srvCB)
-    rospy.spin()
+    # s = rclpy.Service("change_mode", MissionModeChange, c.srvCB)
+    s = c.create_service(MissionModeChange, "change_mode", c.srvCB)
+    rclpy.spin()
 
-if __name__ == '__main__':
-    rospy.init_node('behavior_selector')
+def main(args=None):
+    rclpy.init(args=args)
     print ("Starting behavior selector")   
     startNode()
+
+if __name__ == '__main__':
+    main()

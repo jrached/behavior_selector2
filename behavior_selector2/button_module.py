@@ -1,12 +1,12 @@
 import os
-import rospy
-import rospkg
+import rclpy
+from ament_index_python.packages import get_package_share_directory
 
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 from python_qt_binding.QtWidgets import QWidget
 
-from behavior_selector.srv import MissionModeChange
+from behavior_selector2.srv import MissionModeChange
 
 # Must match values in MissionModeChange
 START = 1
@@ -22,9 +22,9 @@ class MissionModePlugin(Plugin):
 
         # Create QWidget
         self._widget = QWidget()
-        rp = rospkg.RosPack()
+
         # Get path to UI file which should be in the "resource" folder of this package
-        ui_file = os.path.join(rp.get_path('behavior_selector'), 'resource', 'MissionModePlugin.ui')
+        ui_file = os.path.join(get_package_share_directory('behavior_selector2'), 'resource', 'MissionModePlugin.ui')
         # Extend the widget with all attributes and children from UI file
         loadUi(ui_file, self._widget)
         # Give QObjects reasonable names
@@ -43,6 +43,10 @@ class MissionModePlugin(Plugin):
         self._widget.end_push_button.pressed.connect(self._on_end_pressed)
         self._widget.stop_push_button.pressed.connect(self._on_stop_pressed)
 
+        # To start client
+        self.node = None
+        self.client = None
+
     def _on_start_pressed(self):
         mode = START
         self._change_mode(mode)
@@ -56,11 +60,13 @@ class MissionModePlugin(Plugin):
         self._change_mode(mode)
 
     def _change_mode(self,mode):
-        rospy.wait_for_service('change_mode',1)
-        try:
-            mm = rospy.ServiceProxy('change_mode', MissionModeChange)
-            mm(mode)
-        except rospy.ServiceException as e:
-            print("Service call failed: %s"%e)
-
+        if self.client == None: 
+            rclpy.init()
+            self.node = rclpy.create_node('mode_client')
+            self.client = self.node.create_client(MissionChangeMode, "change_mode")
+        
+        while not self.client.wait_for_service(timeout_sec=1.0):
+            self.node.get_logger().info('MissionChangeMode service not available, waiting again...')
+        resp = self.client.call_async(mode) 
+        rclpy.spin_until_future_complete(self.node, mode)
     
