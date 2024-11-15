@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 import rclpy
+from rclpy.node import Node
 import numpy as np
 
-from snapstack_msgs.msg import QuadFlightMode
+from snapstack_msgs2.msg import QuadFlightMode
 from behavior_selector2.srv import MissionModeChange
 
 NOT_FLYING = 0
@@ -13,7 +14,7 @@ class Behavior_Selector(Node):
     def __init__(self):
         super().__init__('behavior_selector')
         self.status = NOT_FLYING
-        self.pubEvent    = self.create_publisher(QuadFlightMode, "globalflightmode", queue_size=1, latch=True)
+        self.pubEvent    = self.create_publisher(QuadFlightMode, "globalflightmode", 1)
         self.flightevent = QuadFlightMode()
         
     def sendEvent(self):
@@ -43,7 +44,7 @@ def startNode():
     c = Behavior_Selector()
     # s = rclpy.Service("change_mode", MissionModeChange, c.srvCB)
     s = c.create_service(MissionModeChange, "change_mode", c.srvCB)
-    rclpy.spin()
+    rclpy.spin(c)
 
 def main(args=None):
     rclpy.init(args=args)
