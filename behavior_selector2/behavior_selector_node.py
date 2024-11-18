@@ -18,7 +18,7 @@ class Behavior_Selector(Node):
         self.flightevent = QuadFlightMode()
         
     def sendEvent(self):
-        self.flightevent.header.stamp = self.get_clock().now()
+        self.flightevent.header.stamp = self.get_clock().now().to_msg()
         self.pubEvent.publish(self.flightevent)
 
     def change_mode(self,req):
@@ -36,9 +36,10 @@ class Behavior_Selector(Node):
             self.flightevent.mode = QuadFlightMode.GO
             self.sendEvent()
 
-    def srvCB(self,req):
+    def srvCB(self, req, resp):
         self.change_mode(req)
-        return True
+        resp.received = True
+        return resp
                   
 def startNode():
     c = Behavior_Selector()

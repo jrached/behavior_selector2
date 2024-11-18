@@ -27,6 +27,6 @@ def generate_launch_description():
 
 
     return LaunchDescription([
-        rqt_node,
+        # rqt_node,
         behavior_node
     ])
