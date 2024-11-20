@@ -6,7 +6,7 @@ from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 from python_qt_binding.QtWidgets import QWidget
 
-from behavior_selector2.srv import MissionModeChange
+from mission_mode.srv import MissionModeChange
 
 # Must match values in MissionModeChange
 START = 1

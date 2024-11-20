@@ -4,7 +4,7 @@ from rclpy.node import Node
 import numpy as np
 
 from snapstack_msgs2.msg import QuadFlightMode
-from behavior_selector2.srv import MissionModeChange
+from mission_mode.srv import MissionModeChange
 
 NOT_FLYING = 0
 FLYING = 1
